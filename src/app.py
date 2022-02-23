@@ -21,22 +21,22 @@ app = Flask(__name__)
 CORS(app, support_credentials=True)
 
 
-@app.route('/excel', methods=['POST'])
-def createExcel():
-    idProyecto = request.json['idProyecto']
-    print(idProyecto)
+@app.route('/excelQuery', methods=['POST'])
+def createExcelWhitQuery():
+    query = request.json['query']
     return Response(
-        save_virtual_workbook(generarExcelGrande(idProyecto)),
+        save_virtual_workbook(generarExcel(query)),
         headers={
             'Content-Disposition': 'attachment; filename=sheet.xlsx',
             'Content-type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         }
     )
-    #return { 'status ' : 'ok'}
-@app.route('/excel', methods=['GET'])
-def createExcelPrueba():
+
+@app.route('/excel', methods=['POST'])
+def createExcel():
+    idProyecto = request.json['idProyecto']
     return Response(
-        save_virtual_workbook(generarPrueba()),
+        save_virtual_workbook(generarExcelGrande(idProyecto)),
         headers={
             'Content-Disposition': 'attachment; filename=sheet.xlsx',
             'Content-type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -51,21 +51,23 @@ def createPdfPrueba():
     # return send_file(generarPdfEjemplo(), as_attachment=True)
     generarPdfId()
     return "aaa"
-
+  
 @app.route('/zip', methods=['GET'])
 def createZipPrueba():
+    generarVariosPdf(['21-1639680474344', '14-1638972378193'])
     response = make_response()
     response.headers['Content-Disposition'] = "attachment; filename='ejemplo.zip"
     response.mimetype = 'application/zip'
-    return send_file('pdf\\a\\destination.zip', as_attachment=True)
-    # with open(os.path.join('destinatio.zip'), 'rb') as f:
-    #     data = f.readlines()
-    # os.remove(os.path.join('destinatio.zip'))
-    # return Response(data, headers={
-    #     'Content-Type': 'application/zip',
-    #     'Content-Disposition': 'attachment; filename=%s;' % 'destinatio.zip'
-    # })
+    return send_file('../destination.zip', as_attachment=True)
 
+@app.route('/zip', methods=['POST'])
+def createZipPdf():
+    idEncuestas= request.json['idEncuestas']
+    generarVariosPdf(idEncuestas)
+    response = make_response()
+    response.headers['Content-Disposition'] = "attachment; filename='ejemplo.zip"
+    response.mimetype = 'application/zip'
+    return send_file('../destination.zip', as_attachment=True)
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=3000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

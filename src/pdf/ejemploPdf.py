@@ -1,6 +1,7 @@
 import PyPDF2 
 import io
 import os
+import json
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 import zipfile
@@ -23,10 +24,32 @@ def llenarCampos(can, x, y, dato, distanciaX):
         can.drawString(x, y, letra)
         x = x + distanciaX
 
-def generarPdfId():
+def generarVariosPdf (ids):
+    # generarPdfId()
+    if os.path.exists("pdfs"):
+        pdfsExistentes = ([arch.name for arch in os.scandir("pdfs") if arch.is_file()])
+        for pdf in pdfsExistentes:
+            os.remove("pdfs/"+pdf)
+    if os.path.exists("destination.zip"):
+        os.remove("destination.zip")
+       # print(ids)
+    for id in ids:
+        generarPdfId(id)
+    zf = zipfile.ZipFile("destination.zip", mode="w")
+    pdfsExistentes = ([arch.name for arch in os.scandir("pdfs") if arch.is_file()])
+    try:
+        for pdf in pdfsExistentes:
+            zf.write("pdfs/"+pdf, compress_type=compression)
+    finally:
+        zf.close()
+   
+    
+    
+
+def generarPdfId( id):
     bd = obtener_conexion()
     with bd.cursor() as cursor:
-              cursor.execute("SELECT A.*,B.*,C.*,D.*,E.*,F.*,G.*,H.*,N.*,I.*,J.*,K.*,M.* FROM aes2021.Encabezado A INNER JOIN aes2021.Sociodemograficas B ON A.Id_Encuesta = B.Id_Encuesta INNER JOIN aes2021.Caracteristicas C ON A.Id_Encuesta = C.Id_Encuesta INNER JOIN aes2021.Consentimiento D ON A.Id_Encuesta = D.Id_Encuesta INNER JOIN aes2021.Datos E ON A.Id_Encuesta = E.Id_Encuesta INNER JOIN aes2021.Economia F ON A.Id_Encuesta = F.Id_Encuesta INNER JOIN aes2021.Energia G ON A.Id_Encuesta = G.Id_Encuesta INNER JOIN aes2021.Servicios H ON A.Id_Encuesta = H.Id_Encuesta INNER JOIN aes2021.Tratamiento_DP I ON A.Id_Encuesta = I.Id_Encuesta INNER JOIN aes2021.Ubicacion J ON A.Id_Encuesta = J.Id_Encuesta INNER JOIN aes2021.Sociales K ON A.Id_Encuesta = K.Id_Encuesta INNER JOIN aes2021.Agua N ON A.Id_Encuesta = N.Id_Encuesta INNER JOIN aes2021.Proyectos_funcionarios L ON A.Id_Proyecto_Funcionario = L.Id_Proyecto_Funcionario INNER JOIN aes2021.Funcionarios M ON M.Id_Funcionario = L.Id_Funcionario WHERE A.isdelete = 0 AND A.Id_Encuesta = '20-1638898904822';")
+              cursor.execute("SELECT A.*,B.*,C.*,D.*,E.*,F.*,G.*,H.*,N.*,I.*,J.*,K.*,M.* FROM aes2021.Encabezado A INNER JOIN aes2021.Sociodemograficas B ON A.Id_Encuesta = B.Id_Encuesta INNER JOIN aes2021.Caracteristicas C ON A.Id_Encuesta = C.Id_Encuesta INNER JOIN aes2021.Consentimiento D ON A.Id_Encuesta = D.Id_Encuesta INNER JOIN aes2021.Datos E ON A.Id_Encuesta = E.Id_Encuesta INNER JOIN aes2021.Economia F ON A.Id_Encuesta = F.Id_Encuesta INNER JOIN aes2021.Energia G ON A.Id_Encuesta = G.Id_Encuesta INNER JOIN aes2021.Servicios H ON A.Id_Encuesta = H.Id_Encuesta INNER JOIN aes2021.Tratamiento_DP I ON A.Id_Encuesta = I.Id_Encuesta INNER JOIN aes2021.Ubicacion J ON A.Id_Encuesta = J.Id_Encuesta INNER JOIN aes2021.Sociales K ON A.Id_Encuesta = K.Id_Encuesta INNER JOIN aes2021.Agua N ON A.Id_Encuesta = N.Id_Encuesta INNER JOIN aes2021.Proyectos_funcionarios L ON A.Id_Proyecto_Funcionario = L.Id_Proyecto_Funcionario INNER JOIN aes2021.Funcionarios M ON M.Id_Funcionario = L.Id_Funcionario WHERE A.isdelete = 0 AND A.Id_Encuesta = '"+id+"';")
               datos = cursor.fetchone()
     print(datos[239])
     if os.path.exists("src/destination.pdf"):
@@ -676,10 +699,149 @@ def generarPdfId():
     llenarCampos(can9, 440, 800, "01", 10)
     #anio
     llenarCampos(can9, 488, 800, "2021", 10)
-    can9.drawString(404,758,'x')
-    can9.drawString(404,746,'x')
-    can9.drawString(404,734,'x')
-    can9.drawString(404,722,'x')
+    if datos[342] == 'Cielo abierto':
+        can9.drawString(404,758,'x')
+    elif datos[342] == 'Botadero':
+        can9.drawString(404,746,'x')
+    elif datos[342] == 'Incineración':
+        can9.drawString(404,734,'x')
+    elif datos[342] == 'Enterramiento':
+        can9.drawString(404,722,'x')
+    #elementos emplea
+    if datos[343] == 'Bolsa plástica':
+        can9.drawString(404,664,'x')
+    elif datos[343] == 'En Caneca con tapa':
+        can9.drawString(404,652,'x')
+    elif datos[343] == 'Pozo comunitario':
+        can9.drawString(404,640,'x')
+    #dispocision aguas negras
+    if datos[344] == 'Alcantarrillado':
+        can9.drawString(404, 580, 'x')
+    elif datos[344] == 'Pozo séptico':
+        can9.drawString(404, 568, 'x')
+    elif datos[344] == 'Campo abierto':
+        can9.drawString(404, 556, 'x')
+    elif datos[344] == 'Letrina':
+        can9.drawString(404, 544, 'x')
+    elif datos[344] == 'Río':
+        can9.drawString(404, 532, 'x')
+    elif datos[344] == 'Quebrada':
+        can9.drawString(404, 520, 'x')
+    elif datos[344] == 'Arroyo':
+        can9.drawString(404, 508, 'x')
+    elif datos[344] == 'Otro':
+        can9.drawString(404, 496, 'x')
+        can9.drawString(240, 496, datos[345])
+    #dispocision de aguas residuales
+    if datos[346] == 'Pozo séptico':
+        can9.drawString(404,436, 'x')
+    elif datos[346] == 'Campo abierto':
+        can9.drawString(404,424, 'x')
+    elif datos[346] == 'Letrina':
+        can9.drawString(404,412, 'x')
+    elif datos[346] == 'Río':
+        can9.drawString(404,400, 'x')
+    elif datos[346] == 'Quebrada':
+        can9.drawString(404,388, 'x')
+    elif datos[346] == 'Arroyo':
+        can9.drawString(404,376, 'x')
+    elif datos[346] == 'Otro':
+        can9.drawString(404,364, 'x')
+        can9.drawString(240,364, datos[346])
+    familia = (json.loads(datos[13]))
+    for i in range(len(familia)):
+        integrante = dict(familia[i])
+        if integrante['Parentesco'] == 'Jefe (a) de hogar':
+            can9.drawString(130, 201, 'x')
+            can9.drawString(231, 201, integrante['Genero'])
+            can9.drawString(281, 201, str(integrante['Edad']))
+            can9.drawString(331, 201, integrante['Registro'])
+            can9.drawString(381, 201, integrante['Escolaridad'])
+            can9.drawString(431, 201, integrante['Ocupacion'])
+        elif integrante['Parentesco'] == 'Pareja, Esposo(a), cónyuge, compañero(a)':
+            can9.drawString(130, 181, 'x')
+            can9.drawString(231, 181, integrante['Genero'])
+            can9.drawString(281, 181, str(integrante['Edad']))
+            can9.drawString(331, 181, integrante['Registro'])
+            can9.drawString(381, 181, integrante['Escolaridad'])
+            can9.drawString(431, 181, integrante['Ocupacion'])
+        elif integrante['Parentesco'] == 'Hijo(a), hijastro(a)':
+            can9.drawString(130, 168, 'x')
+            can9.drawString(231, 168, integrante['Genero'])
+            can9.drawString(281, 168, str(integrante['Edad']))
+            can9.drawString(331, 168, integrante['Registro'])
+            can9.drawString(381, 168, integrante['Escolaridad'])
+            can9.drawString(431, 168, integrante['Ocupacion'])
+        elif integrante['Parentesco'] == 'Hijo(a), hijastro(a) 2':
+            can9.drawString(130, 155, 'x')
+            can9.drawString(231, 155, integrante['Genero'])
+            can9.drawString(281, 155, str(integrante['Edad']))
+            can9.drawString(331, 155, integrante['Registro'])
+            can9.drawString(381, 155, integrante['Escolaridad'])
+            can9.drawString(431, 155, integrante['Ocupacion'])
+        elif integrante['Parentesco'] == 'Hijo(a), hijastro(a) 3':
+            can9.drawString(130, 142, 'x')
+            can9.drawString(231, 142, integrante['Genero'])
+            can9.drawString(281, 142, str(integrante['Edad']))
+            can9.drawString(331, 142, integrante['Registro'])
+            can9.drawString(381, 142, integrante['Escolaridad'])
+            can9.drawString(431, 142, integrante['Ocupacion'])
+        elif integrante['Parentesco'] == 'Hijo(a), hijastro(a) 4':
+            can9.drawString(130, 129, 'x')
+            can9.drawString(231, 129, integrante['Genero'])
+            can9.drawString(281, 129, str(integrante['Edad']))
+            can9.drawString(331, 129, integrante['Registro'])
+            can9.drawString(381, 129, integrante['Escolaridad'])
+            can9.drawString(431, 129, integrante['Ocupacion'])
+        elif integrante['Parentesco'] == 'Hijo(a), hijastro(a) 5':
+            can9.drawString(130, 116, 'x')
+            can9.drawString(231, 116, integrante['Genero'])
+            can9.drawString(281, 116, str(integrante['Edad']))
+            can9.drawString(331, 116, integrante['Registro'])
+            can9.drawString(381, 116, integrante['Escolaridad'])
+            can9.drawString(431, 116, integrante['Ocupacion'])
+        elif integrante['Parentesco'] == 'Nieto(a)':
+            can9.drawString(130, 103, 'x')
+            can9.drawString(231, 103, integrante['Genero'])
+            can9.drawString(281, 103, str(integrante['Edad']))
+            can9.drawString(331, 103, integrante['Registro'])
+            can9.drawString(381, 103, integrante['Escolaridad'])
+            can9.drawString(431, 103, integrante['Ocupacion'])
+        elif integrante['Parentesco'] == 'Suegro(a)':
+            can9.drawString(130, 91, 'x')
+            can9.drawString(231, 91, integrante['Genero'])
+            can9.drawString(281, 91, str(integrante['Edad']))
+            can9.drawString(331, 91, integrante['Registro'])
+            can9.drawString(381, 91, integrante['Escolaridad'])
+            can9.drawString(431, 91, integrante['Ocupacion'])
+        elif integrante['Parentesco'] == 'Tios(as)':
+            can9.drawString(130, 78, 'x')
+            can9.drawString(231, 78, integrante['Genero'])
+            can9.drawString(281, 78, str(integrante['Edad']))
+            can9.drawString(331, 78, integrante['Registro'])
+            can9.drawString(381, 78, integrante['Escolaridad'])
+            can9.drawString(431, 78, integrante['Ocupacion'])
+        elif integrante['Parentesco'] == 'Yerno, nuera':
+            can9.drawString(130, 66, 'x')
+            can9.drawString(231, 66, integrante['Genero'])
+            can9.drawString(281, 66, str(integrante['Edad']))
+            can9.drawString(331, 66, integrante['Registro'])
+            can9.drawString(381, 66, integrante['Escolaridad'])
+            can9.drawString(431, 66, integrante['Ocupacion'])
+        elif integrante['Parentesco'] == 'Otro (a) pariente del (de la) jefe (a)':
+            can9.drawString(130, 48, 'x')
+            can9.drawString(231, 48, integrante['Genero'])
+            can9.drawString(281, 48, str(integrante['Edad']))
+            can9.drawString(331, 48, integrante['Registro'])
+            can9.drawString(381, 48, integrante['Escolaridad'])
+            can9.drawString(431, 48, integrante['Ocupacion'])
+        elif integrante['Parentesco'] == 'Otro (a) no pariente':
+            can9.drawString(130, 36, 'x')
+            can9.drawString(231, 36, integrante['Genero'])
+            can9.drawString(281, 36, str(integrante['Edad']))
+            can9.drawString(331, 36, integrante['Registro'])
+            can9.drawString(381, 36, integrante['Escolaridad'])
+            can9.drawString(431, 36, integrante['Ocupacion'])
     can9.save()
     #hoja 10 del pdf
     packet10 = io.BytesIO()
@@ -746,7 +908,6 @@ def generarPdfId():
     new_pdf11 = PyPDF2.PdfFileReader(packet11)
     new_pdf12 = PyPDF2.PdfFileReader(packet12)
 
-    
     # read your existing PDF
     existing_pdf = PyPDF2.PdfFileReader(open("src/pdf/encuestas/AES-01.pdf", "rb"))
     existing_pdf2 = PyPDF2.PdfFileReader(open("src/pdf/encuestas/AES-02.pdf", "rb"))
@@ -799,7 +960,7 @@ def generarPdfId():
     output.addPage(page11)
     output.addPage(page12)
     # finally, write "output" to a real file
-    outputStream = open("src/destination.pdf", "wb")
+    outputStream = open("pdfs/"+datos[3]+".pdf", "wb")
     output.write(outputStream)
     outputStream.close()
 
@@ -1486,4 +1647,4 @@ def generarRar():
     return "destination.pdf"
 
 if __name__ == '__main__':
-    generarPdfId()
+    generarVariosPdf()
