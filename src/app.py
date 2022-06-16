@@ -4,7 +4,8 @@ import os
 import csv, operator
 from flask_cors import CORS, cross_origin
 from excel.generacionExcel import *
-from pdf.ejemploPdf import *
+from pdf.pdfLineaColectora import *
+from fotos.ejemploFotos import *
 import PyPDF2 
 from reportlab.pdfgen import canvas
 from reportlab.lib.enums import TA_JUSTIFY
@@ -68,6 +69,15 @@ def createZipPdf():
     response.headers['Content-Disposition'] = "attachment; filename='ejemplo.zip"
     response.mimetype = 'application/zip'
     return send_file('../destination.zip', as_attachment=True)
+
+@app.route('/fotosZip', methods=['POST'])
+def createZipFotos():
+    idFotos= request.json['idFotos']
+    generarRarFotos(idFotos)
+    response = make_response()
+    response.headers['Content-Disposition'] = "attachment; filename='ejemplo.zip"
+    response.mimetype = 'application/zip'
+    return send_file('../imagenes.zip', as_attachment=True)
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

@@ -855,6 +855,8 @@ def generarPdfId( id):
     llenarCampos(can10, 440, 800, "01", 10)
     #anio
     llenarCampos(can10, 488, 800, "2021", 10)
+
+    
     can10.save()
     #hoja 11 del pdf
     packet11 = io.BytesIO()
