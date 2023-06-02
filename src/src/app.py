@@ -23,10 +23,16 @@ import pyexcel as pe
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 
+from googleapiclient.http import MediaFileUpload
+
+
 import xlsxwriter
+
+from drive.drive import create_driver_folder, sendFiles, getFolderId
 
 app = Flask(__name__)
 CORS(app, support_credentials=True)
+
 
 
 @app.route('/excelQuery', methods=['POST'])
@@ -85,6 +91,29 @@ def createZipFotos():
     response.headers['Content-Disposition'] = "attachment; filename='ejemplo.zip"
     response.mimetype = 'application/zip'
     return send_file('../imagenes.zip', as_attachment=True)
+
+
+@app.route('/SendGoogleDrive', methods=['POST'])
+def sendGoogleDrive():
+    folder_name = request.form.get('folder_name')
+    files = request.files.getlist('files')
+
+
+    # validacion si existe la carpeta
+    folder_id = getFolderId(folder_name)
+    if not folder_id: 
+        # Crear la carpeta utilizando la función
+        folder_id = create_driver_folder(folderName=folder_name)
+
+    # Subir los archivos a Google Drive
+    for file in files:
+        sendFiles(file=file, folder_id=folder_id)
+    
+    # Obtener el enlace de la carpeta
+    folder_url = 'https://drive.google.com/drive/folders/' + folder_id
+    print('Enlace de la carpeta:', folder_url)
+    return folder_url
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
