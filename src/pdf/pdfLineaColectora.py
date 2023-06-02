@@ -63,7 +63,7 @@ def generarFotosCoordenadas(ids, carpeta):
 def generarPdfSocializacion(idFormulario='302-1605359064075'):
     bd = obtener_conexion()
     with bd.cursor() as cursor:
-              cursor.execute("SELECT *, (SELECT DISTINCT rutaserver from suncosurvey.fotos_firma B WHERE B.`Id_Encuesta`= A.`Id_Encuesta`) FROM suncosurvey.Users2 A Where `Id_Encuesta` = '"+idFormulario+"'")
+              cursor.execute("SELECT *, (SELECT DISTINCT rutaserver from suncosurvey.fotos_firma B WHERE B.`Id_Encuesta`= A.`Id_Encuesta` AND B.IsDelete=0) FROM suncosurvey.Users3 A Where `Id_Encuesta` = '"+idFormulario+"';")
               datos = cursor.fetchone()
     print(datos)
     packet = io.BytesIO()
@@ -80,8 +80,8 @@ def generarPdfSocializacion(idFormulario='302-1605359064075'):
     can.drawString(60, 619, datos[2])
     can.drawString(330, 606, datos[3])
     can.drawString(60, 593, datos[4])
-    can.drawString(410, 593, datos[5])
-    can.drawString(60, 580, datos[6])
+    can.drawString(458, 593, datos[5])
+    can.drawString(107, 580, datos[6])
     urllib.request.urlretrieve("https://www.php.engenius.com.co"+datos[9],"ejemplo.jpg")
     filename = 'ejemplo.jpg'
     filename1 = 'fondoblanco.jpg'
@@ -94,12 +94,12 @@ def generarPdfSocializacion(idFormulario='302-1605359064075'):
     background.paste(frontImage, (width, height), frontImage)
     background.save("new.png", format="png")
     can.drawImage('new.png', 50, 353, 200, 40)
-    can.drawString(93, 327, datos[1])
-    can.drawString(93, 314, datos[2])
-    can.drawString(103, 299, datos[7])
+    can.drawString(93, 313, datos[1])
+    can.drawString(93, 300, datos[2])
+    can.drawString(103, 287, datos[7])
     can.save()
     new_pdf = PyPDF2.PdfFileReader(packet)
-    existing_pdf = PyPDF2.PdfFileReader(open("src/pdf/formatoEnTerritorio/FORMATO-SOCIALIZACIÓN-Y-REPLANTEO-DE-USUARIOS_DISPAC.pdf", "rb"))
+    existing_pdf = PyPDF2.PdfFileReader(open("src/pdf/formatoEnTerritorio/FORMATO_SOCIALIZACIÓN_Y_REPLANTEO_DE_USUARIOS_DISPAC.pdf", "rb"))
     output = PyPDF2.PdfFileWriter()
     page = existing_pdf.getPage(0)
     page.mergePage(new_pdf.getPage(0))
@@ -1200,7 +1200,7 @@ def generarPdfId(id = '302-1605359064075', carpeta= "1"):
     #fecha de formulario
     #dia
     dia = random.randint(1, 8)
-    dia = '0'+str(dia)
+    dia = '0'+str(dia)  
     llenarCampos(can12, 398, 800, dia, 10)
     #mes
     llenarCampos(can12, 440, 800, '04', 10)
@@ -1245,7 +1245,7 @@ def generarPdfId(id = '302-1605359064075', carpeta= "1"):
     background.paste(frontImage, (width, height), frontImage)
     background.save("new.png", format="png")
 
-    can12.drawImage('new.png', 75, 480, 60, 40)
+    can12.drawImage('new.png', 75, 500, 200, 99)
     #tipo id
     #can12.drawString(490, 580, "x")
     can12.drawString(490, 568, "x")
