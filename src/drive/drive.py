@@ -2,6 +2,7 @@
 import os
 import io
 from google.auth import impersonated_credentials
+from googleapiclient.http import MediaIoBaseUpload
 from google.auth.transport.requests import Request
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
@@ -34,7 +35,7 @@ def create_driver_folder(folderName):
     #crea la carpeta de google drive
     folder_metadata = {
         'name': folderName,
-        'mimeType': 'application/vnd.google-apps.folder'
+        'mimeType': 'application/vnd.google-apps.folder',
     }
     folder = service.files().create(body=folder_metadata).execute()
     folder_id = folder['id']
@@ -55,8 +56,21 @@ def create_driver_folder(folderName):
 
     return folder_id
 
-from googleapiclient.http import MediaIoBaseUpload
-import io
+def create_sub_folders(folder_id, subfolder_names):
+    subfolder_ids = []
+    for subfolder_name in subfolder_names:
+        subfolder_metadata = {
+            'name': subfolder_name,
+            'parents': [folder_id],
+            'mimeType': 'application/vnd.google-apps.folder'
+        }
+        subfolder = service.files().create(body=subfolder_metadata).execute()
+        subfolder_id = subfolder.get('id')
+        subfolder_ids.append(subfolder_id)
+    return subfolder_ids
+
+
+    
 
 def sendFiles(file, folder_id):
     file_name, file_extension = os.path.splitext(file.filename)
@@ -82,6 +96,8 @@ def sendFiles(file, folder_id):
     file_id = uploaded_file.get('id')
     print(f'ID del archivo: {file_id}')
 
+    
+
 def getFolderId(folder_name):
     # Realiza una consulta a la API de Google Drive para buscar la carpeta por su nombre
     results = service.files().list(q=f"mimeType='application/vnd.google-apps.folder' and name='{folder_name}'").execute()
@@ -93,8 +109,3 @@ def getFolderId(folder_name):
     
     # Si no se encontró ninguna carpeta, devuelve None
     return None
-
-if __name__ == '__main__': 
-    create_driver_folder()
-    sendFiles()
-    getFolderId()

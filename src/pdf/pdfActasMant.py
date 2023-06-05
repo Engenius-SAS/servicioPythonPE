@@ -13,6 +13,7 @@ import  urllib
 from io import StringIO, BytesIO
 import random 
 
+outPut = ""
 
 try:
     import zlib
@@ -51,7 +52,7 @@ def generarVariosPdf (ids):
 def generarPdfId(id):
     bd = obtener_conexion()
     with bd.cursor() as cursor:
-        cursor.execute("SELECT A.Id_Encuesta, A.fecha, B.Maintenance_Type, C.UserName, A.Id_Proyecto, A.Id_Seccional, A.nombre, D.NUI, A.tipoDoc, A.numeroDoc, A.telefono, A.email, A.usopredio, A.propio, A.estrato, A.depto, A.municipio, A.codmuni, A.vereda, A.Latitud, A.Longitud, A.tipo, A.medidor, A.marcaM, A.serialM, A.instalaciones, A.fotovoltaico, A.estadoGabinete, A.paneles, A.puestaTierra, A.inversor, A.bateria, A.protecciones, A.mppt, A.soporte, A.observacionesF FROM db_liwa.Tecnico A INNER JOIN db_liwa.Maintenance_new B ON A.instalMant = B.Id_Maintenance INNER JOIN db_liwa.User C ON A.Id_Encuestador = C.Id_User INNER JOIN db_liwa.AOM D ON B.Id_Beneficiario = D.Id_Encuesta  WHERE A.Id_Encuesta IN ('"+id+"');")
+        cursor.execute("SELECT A.Id_Encuesta, A.fecha, B.Maintenance_Type, C.UserName, A.Id_Proyecto, A.Id_Seccional, A.nombre, D.NUI, A.tipoDoc, A.numeroDoc, A.telefono, A.email, A.usopredio, A.propio, A.estrato, A.depto, A.municipio, A.codmuni, A.vereda, A.Latitud, A.Longitud, A.tipo, A.medidor, A.marcaM, A.serialM, A.instalaciones, A.fotovoltaico, A.estadoGabinete, A.paneles, A.puestaTierra, A.inversor, A.bateria, A.protecciones, A.mppt, A.soporte, A.observacionesF FROM db_liwa.Tecnico A INNER JOIN db_liwa.Maintenance_new B ON A.instalMant = B.Id_Maintenance INNER JOIN db_liwa.User C ON A.Id_Encuestador = C.Id_User INNER JOIN db_liwa.AOM D ON B.Id_Beneficiario = D.Id_Encuesta  WHERE A.Id_Encuesta IN ('"+ id +"');")
         datos = cursor.fetchone()
     print(datos)
     packet = io.BytesIO()
@@ -602,6 +603,27 @@ def generarPdfId(id):
             
     # can1.save()
 
+    # new_pdf = PyPDF2.PdfFileReader(packet)
+    # new_pdf1 = PyPDF2.PdfFileReader(packet1)
+
+    # existing_pdf = PyPDF2.PdfFileReader(open("src/pdf/actas/ActaDeMantenimientos-1.pdf", "rb"))
+    # existing_pdf1 = PyPDF2.PdfFileReader(open("src/pdf/actas/ActaDeMantenimientos-2.pdf", "rb"))
+
+    # output = PyPDF2.PdfFileWriter()
+
+    # page = existing_pdf.getPage(0)
+    # page1 = existing_pdf1.getPage(0)
+    # page.mergePage(new_pdf.getPage(0))
+    # page1.mergePage(new_pdf1.getPage(0))
+    # output.addPage(page)
+    # output.addPage(page1)
+
+    # outPut = outputStream
+    # # os.mkdir('pdfs/'+str(i[0]))
+    # outputStream = open("pdfs/"+str(datos[6])+"_Acta.pdf", "wb")
+    # output.write(outputStream)
+    # outputStream.close()
+
     new_pdf = PyPDF2.PdfFileReader(packet)
     new_pdf1 = PyPDF2.PdfFileReader(packet1)
 
@@ -617,11 +639,19 @@ def generarPdfId(id):
     output.addPage(page)
     output.addPage(page1)
 
-    # os.mkdir('pdfs/'+str(i[0]))
-    outputStream = open("pdfs/"+str(datos[6])+"_Acta.pdf", "wb")
-    output.write(outputStream)
-    outputStream.close()
+    # Crear el nombre del archivo final
+    output_filename = "pdfs/" + str(datos[6]) + "_Acta.pdf"
+
+    # Guardar el archivo final
+    with open(output_filename, "wb") as output_file:
+        output.write(output_file)
+
+    # Utilizar el archivo final en otro lugar
+    outPut = output_file
+
 
 
 if __name__ == '__main__':
    generarPdfId('307-1605790991386')
+   outPut
+
