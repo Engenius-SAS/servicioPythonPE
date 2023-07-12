@@ -8,7 +8,7 @@ from google.auth.transport.requests import Request
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
-import openpyxl
+from googleapiclient.errors import HttpError
 
 # ruta al json de las credenciales de google 
 credentials_file = os.path.join(os.path.dirname(__file__), 'drive_secrets.json')
@@ -137,14 +137,23 @@ def sendFiles(file_path, folder_id):
 
     
 
-def getFolderId(folder_name):
-    # Realiza una consulta a la API de Google Drive para buscar la carpeta por su nombre
-    results = service.files().list(q=f"mimeType='application/vnd.google-apps.folder' and name='{folder_name}'").execute()
+def getFolderId(folder_name, parentFolderId=None):
+    query = f"mimeType='application/vnd.google-apps.folder' and name='{folder_name}'"
+    if parentFolderId:
+        query += f" and '{parentFolderId}' in parents"
+    
+    results = service.files().list(q=query).execute()
     folders = results.get('files', [])
     
-    # Si se encontró una carpeta con el nombre dado, devuelve el ID de la primera coincidencia
     if folders:
         return folders[0]['id']
     
-    # Si no se encontró ninguna carpeta, devuelve None
     return None
+
+
+def deletedFolder(folderId):
+    try:
+        service.files().delete(fileId=folderId).execute()
+        print(f"carpeta eliminada: {folderId}")
+    except HttpError:
+        print("error al eliminar la carpeta")

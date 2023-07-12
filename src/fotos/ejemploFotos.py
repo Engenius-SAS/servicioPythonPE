@@ -55,7 +55,10 @@ def generarRarFotos (ids):
         zf.close()
 
 
-def generarFotosCoordenadas(ids, folderId=None):                                        
+def generarFotosCoordenadas(ids, folderId=None):
+    # Crear un conjunto para almacenar los ID de las imágenes procesadas
+    imagenes_procesadas = set()
+
     bd = obtener_conexion()
     try:
         conn = bd.cursor(pymysql.cursors.DictCursor)
@@ -63,20 +66,22 @@ def generarFotosCoordenadas(ids, folderId=None):
         fotos=conn.fetchall()
         if len(fotos) > 0:
             for foto in fotos:
+                if foto['Id_Foto_Encuesta'] in imagenes_procesadas:
+                    continue  # Saltar la imagen si ya ha sido procesada
 
-                subFolderName= [ str(foto["Id_Encuesta"]) ]
-                folderName = subFolderName[0].strip('[]') 
-                existingFolder = getFolderId(folderName)
+                subFolderName = [str(foto["Id_Encuesta"])]
+                folderName = subFolderName[0].strip('[]')
+                existingFolderSubfolder = getFolderId(folderName, parentFolderId=folderId)
 
-                if existingFolder:
-                    subfolderId = existingFolder
-                    print("existe")
+                if existingFolderSubfolder:
+                    subfolderId = existingFolderSubfolder
+                    print("existe" + subfolderId)
                 else:
                     # Ejecutar las funciones después de completar el bucle en la condición 1
                     subfolderId = create_sub_folders(folder_id=folderId, subfolder_names=subFolderName)
-                    print(subfolderId)
+                    print("creo carpeta nueva" + subfolderId)
 
-                print( "latitud: " + foto['U_latitud'] +" , Longitud: " + foto['U_longitud'])
+                print("latitud: " + foto['U_latitud'] +" , Longitud: " + foto['U_longitud'])
                 if os.path.exists("imagenes/"+foto['Id_Encuesta']):
                     with urllib.request.urlopen('https://www.php.engenius.com.co'+foto['rutaserver']) as url:
                         data = url.read()
@@ -90,10 +95,8 @@ def generarFotosCoordenadas(ids, folderId=None):
                     image_editable.text((200,2100), title_text, (237, 230, 500), font=title_font)
                     my_image.save("imagenes/"+foto['Id_Encuesta']+"/"+foto['Id_Foto_Encuesta']+".jpg")
 
-                    file_path = os.path.abspath("imagenes/" + foto['Id_Encuesta'] + "/" + foto['Id_Foto_Encuesta'] + ".jpg")
-
-                    sendFiles(file_path=file_path, folder_id=subfolderId)
-                    print(subfolderId)                    
+                    # Agregar el ID de la imagen procesada al conjunto
+                    imagenes_procesadas.add(foto['Id_Foto_Encuesta'])
                 else:
                     print("else:", foto['Id_Encuesta'])
                     os.mkdir("imagenes/"+foto['Id_Encuesta'])
@@ -108,16 +111,23 @@ def generarFotosCoordenadas(ids, folderId=None):
                     image_editable = ImageDraw.Draw(my_image)
                     image_editable.text((200,2100), title_text, (237, 230, 500), font=title_font)
                     my_image.save("imagenes/"+foto['Id_Encuesta']+"/"+foto['Id_Foto_Encuesta']+".jpg")
-                    
-                    file_path = os.path.abspath("imagenes/"+foto['Id_Encuesta']+"/"+foto['Id_Foto_Encuesta']+".jpg")    
 
-                    sendFiles(file_path=file_path, folder_id=subfolderId)
+                    # Agregar el ID de la imagen procesada al conjunto
+                    imagenes_procesadas.add(foto['Id_Foto_Encuesta'])
+                    print("imagen procesada"  + imagenes_procesadas)
+
+                file_path = os.path.abspath("imagenes/"+foto['Id_Encuesta']+"/"+foto['Id_Foto_Encuesta']+".jpg")
+                print(file_path)
+                sendFiles(file_path=file_path, folder_id=subfolderId)
+                print("entro al else: " + subfolderId)
+            
             else:
                 print("No trae fotos", foto['Id_Encuesta'])
         else:
-            print("len->0",fotos)
+            print("len->0", fotos)
     except Exception as e:
-                logging.debug(e)
+        logging.debug(e)
+
     
 if __name__ == "__main__":
     LoggingStart()

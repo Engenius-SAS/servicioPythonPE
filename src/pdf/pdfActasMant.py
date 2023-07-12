@@ -61,187 +61,190 @@ def generarPdfId(id, folderId=None):
     packet = io.BytesIO()
     can = canvas.Canvas(packet, pagesize=A4)
     can.setFont("Helvetica", 10)
-    if str(datos[0]) == None:
-        can.drawString(439, 664, "-")#ID encuesta
+    if datos is None:
+        return f"Los siguientes ids no tienen informacion: {id}"
     else:
-        can.drawString(439, 664, str(datos[0]))#ID encuesta
-    if str(datos[1]) == None:
-        can.drawString(478, 642, "-")# Fecha
-    else:
-        can.drawString(478, 642, str(datos[1]))# Fecha
+        if str(datos[0]) is not None:
+            can.drawString(439, 664, "-")#ID encuesta
+        else:
+            can.drawString(439, 664, str(datos[0]))#ID encuesta
+        if str(datos[1]) == None:
+            can.drawString(478, 642, "-")# Fecha
+        else:
+            can.drawString(478, 642, str(datos[1]))# Fecha
 
-    if str(datos[2]) == None:
-        can.drawString(169, 616, "-")
-    else:
-        can.drawString(169, 616, str(datos[2]))# Tipo de matenimiento
-    if str(datos[3]) == None:
-        can.drawString(380, 616, "-")
-    else:
-        can.drawString(380, 616, str(datos[3]))# Nom. tecnico
-    if str(datos[4]) == None:
-        can.drawString(169, 603, "-")
-    else:
-        can.drawString(169, 603, str(datos[4]))# Proyecto
-    if str(datos[5]) == None:
-        can.drawString(380, 603, "-")
-    else:
-        can.drawString(380, 603, str(datos[5]))# Seccional
-    
-    if str(datos[6]) == None:
-        can.drawString(200, 565, "-")
-    else:
-        can.drawString(200, 565, str(datos[6]))# Nombre
-    if str(datos[7]) == None:
-        can.drawString(458, 565, "-")
-    else:
-        can.drawString(458, 565, str(datos[7]))# NUI
-    
-    if str(datos[8]) == "RC":
-        can.drawString(100, 552, "X")# Tipo Doc
-    elif str(datos[8]) == "TI":
-        can.drawString(125, 552, "X")# Tipo Doc
-    elif str(datos[8]) == "CC":
-        can.drawString(155, 552, "X")# Tipo Doc
-    elif str(datos[8]) == "CE":
-        can.drawString(180, 552, "X")# Tipo Doc
-    elif str(datos[8]) == None:
-        can.drawString(190, 552, ".")# Tipo Doc
+        if str(datos[2]) == None:
+            can.drawString(169, 616, "-")
+        else:
+            can.drawString(169, 616, str(datos[2]))# Tipo de matenimiento
+        if str(datos[3]) == None:
+            can.drawString(380, 616, "-")
+        else:
+            can.drawString(380, 616, str(datos[3]))# Nom. tecnico
+        if str(datos[4]) == None:
+            can.drawString(169, 603, "-")
+        else:
+            can.drawString(169, 603, str(datos[4]))# Proyecto
+        if str(datos[5]) == None:
+            can.drawString(380, 603, "-")
+        else:
+            can.drawString(380, 603, str(datos[5]))# Seccional
 
-    if str(datos[9]) == None:
-        can.drawString(310, 552, "-")
-    else:
-        can.drawString(310, 552, str(datos[9]))#  N Documento
-    
-    if str(datos[10]) == None:
-        can.drawString(458, 552, "-")
-    else:
-        can.drawString(458, 552, str(datos[10]))#  N telefono
-    if str(datos[11]) == None:
-        can.drawString(205, 539, "-")
-    else:
-        can.drawString(205, 539, str(datos[11]))#  correo
+        if str(datos[6]) == None:
+            can.drawString(200, 565, "-")
+        else:
+            can.drawString(200, 565, str(datos[6]))# Nombre
+        if str(datos[7]) == None:
+            can.drawString(458, 565, "-")
+        else:
+            can.drawString(458, 565, str(datos[7]))# NUI
 
-    if str(datos[12]) == None:
-        can.drawString(150, 525, "-")
-    else:
-        can.drawString(150, 525, str(datos[12]))#  UsoPredio
+        if str(datos[8]) == "RC":
+            can.drawString(100, 552, "X")# Tipo Doc
+        elif str(datos[8]) == "TI":
+            can.drawString(125, 552, "X")# Tipo Doc
+        elif str(datos[8]) == "CC":
+            can.drawString(155, 552, "X")# Tipo Doc
+        elif str(datos[8]) == "CE":
+            can.drawString(180, 552, "X")# Tipo Doc
+        elif str(datos[8]) == None:
+            can.drawString(190, 552, ".")# Tipo Doc
 
-    if str(datos[13]) == None:
-        can.drawString(399, 525, "-")
-    else:
-        can.drawString(399, 525, str(datos[13]))#  Predio propio
-    
-    if str(datos[14]) == None:
-        can.drawString(486, 525, "-")
-    else:
-        can.drawString(486, 525, str(datos[14]))#  estrato
-    
-    if str(datos[15]) == None:
-        can.drawString(163, 486, "-")
-    else:
-        can.drawString(163, 486, str(datos[15]))#  Departamento
+        if str(datos[9]) == None:
+            can.drawString(310, 552, "-")
+        else:
+            can.drawString(310, 552, str(datos[9]))#  N Documento
 
-    if str(datos[16]) == None:
-        can.drawString(313, 486, "-")
-    else:
-        can.drawString(313, 486, str(datos[16]))#  Municipio
-    if str(datos[17]) == None:
-        can.drawString(480, 486, "-")
-    else:
-        can.drawString(480, 486, str(datos[17]))#  Cod. Municipio
+        if str(datos[10]) == None:
+            can.drawString(458, 552, "-")
+        else:
+            can.drawString(458, 552, str(datos[10]))#  N telefono
+        if str(datos[11]) == None:
+            can.drawString(205, 539, "-")
+        else:
+            can.drawString(205, 539, str(datos[11]))#  correo
 
-    if str(datos[18]) == None:
-        can.drawString(163, 473, "-")
-    else:
-        can.drawString(163, 473, str(datos[18]))#  Vereda
+        if str(datos[12]) == None:
+            can.drawString(150, 525, "-")
+        else:
+            can.drawString(150, 525, str(datos[12]))#  UsoPredio
 
-    if str(datos[19]) == None:
-        can.drawString(313, 473, "-")
-    else:
-        can.drawString(313, 473, str(datos[19]))#  latitud
-    
-    if str(datos[20]) == None:
-        can.drawString(464, 473, "-")
-    else:
-        can.drawString(464, 473, str(datos[20]))#  Longitud
+        if str(datos[13]) == None:
+            can.drawString(399, 525, "-")
+        else:
+            can.drawString(399, 525, str(datos[13]))#  Predio propio
 
-    if str(datos[21]) == None:
-        can.drawString(156, 434, "-")
-    else:
-         can.drawString(156, 434, str(datos[21]))#  Tipo_Insta
+        if str(datos[14]) == None:
+            can.drawString(486, 525, "-")
+        else:
+            can.drawString(486, 525, str(datos[14]))#  estrato
 
-    if str(datos[22]) == "Si":
-        can.drawString(155, 421, "X")#  Tipo_Insta
-    elif str(datos[22]) == "No":
-        can.drawString(180, 421, "X")#  Tipo_Insta
-    elif str(datos[22]) == None:
-        can.drawString(190, 421, ".")#  Tipo_Insta
+        if str(datos[15]) == None:
+            can.drawString(163, 486, "-")
+        else:
+            can.drawString(163, 486, str(datos[15]))#  Departamento
 
-    if str(datos[23]) == None:
-        can.drawString(297, 421, "-")
-    else:
-        can.drawString(297, 421, str(datos[23]))#  Marca
+        if str(datos[16]) == None:
+            can.drawString(313, 486, "-")
+        else:
+            can.drawString(313, 486, str(datos[16]))#  Municipio
+        if str(datos[17]) == None:
+            can.drawString(480, 486, "-")
+        else:
+            can.drawString(480, 486, str(datos[17]))#  Cod. Municipio
 
-    if str(datos[24]) == None:
-        can.drawString(464, 421, "-")
-    else:
-        can.drawString(464, 421, str(datos[24]))#  Serial Me
+        if str(datos[18]) == None:
+            can.drawString(163, 473, "-")
+        else:
+            can.drawString(163, 473, str(datos[18]))#  Vereda
 
-    if str(datos[24]) == None:
-        can.drawString(155, 408, "-")
-    else:
-        can.drawString(155, 408, str(datos[25]))#  Instalacion
+        if str(datos[19]) == None:
+            can.drawString(313, 473, "-")
+        else:
+            can.drawString(313, 473, str(datos[19]))#  latitud
 
-    if str(datos[24]) == None:
-        can.drawString(399, 408, "-")
-    else:
-        can.drawString(399, 408, str(datos[26]))#  Fotovoltaica
-    
+        if str(datos[20]) == None:
+            can.drawString(464, 473, "-")
+        else:
+            can.drawString(464, 473, str(datos[20]))#  Longitud
 
-    if str(datos[27]) == None:
-        can.drawString(155, 369, "-")
-    else:
-        can.drawString(155, 369, str(datos[27]))#  Gibnete
-    
-    if str(datos[28]) == None:
-        can.drawString(270, 369, "-")
-    else:
-        can.drawString(270, 369, str(datos[28]))# Paneles
-    
-    if str(datos[29]) == None:
-        can.drawString(380, 369, "-")
-    else:
-        can.drawString(380, 369, str(datos[29]))# Puesta_t
-    
-    if str(datos[30]) == None:
-        can.drawString(486, 369, "-")
-    else:
-        can.drawString(486, 369, str(datos[30]))# inveror
-    
-    if str(datos[31]) == None:
-        can.drawString(155, 356, "-")
-    else:
-        can.drawString(155, 356, str(datos[31]))# Bateria
-    
-    if str(datos[32]) == None:
-        can.drawString(270, 356, "-")
-    else:
-        can.drawString(270, 356, str(datos[32]))# Proyeccion
-    
-    if str(datos[33]) == None:
-        can.drawString(380, 356, "-")
-    else:
-        can.drawString(380, 356, str(datos[33]))# Mppt
-    
-    if str(datos[34]) == None:
-        can.drawString(486, 356, "-")
-    else:
-        can.drawString(486, 356, str(datos[34]))# Soporte
-    
-    if str(datos[35]) == None:
-        can.drawString(100, 331, "-")
-    else:
-        can.drawString(100, 331, str(datos[35]))# Observaciones
+        if str(datos[21]) == None:
+            can.drawString(156, 434, "-")
+        else:
+             can.drawString(156, 434, str(datos[21]))#  Tipo_Insta
+
+        if str(datos[22]) == "Si":
+            can.drawString(155, 421, "X")#  Tipo_Insta
+        elif str(datos[22]) == "No":
+            can.drawString(180, 421, "X")#  Tipo_Insta
+        elif str(datos[22]) == None:
+            can.drawString(190, 421, ".")#  Tipo_Insta
+
+        if str(datos[23]) == None:
+            can.drawString(297, 421, "-")
+        else:
+            can.drawString(297, 421, str(datos[23]))#  Marca
+
+        if str(datos[24]) == None:
+            can.drawString(464, 421, "-")
+        else:
+            can.drawString(464, 421, str(datos[24]))#  Serial Me
+
+        if str(datos[24]) == None:
+            can.drawString(155, 408, "-")
+        else:
+            can.drawString(155, 408, str(datos[25]))#  Instalacion
+
+        if str(datos[24]) == None:
+            can.drawString(399, 408, "-")
+        else:
+            can.drawString(399, 408, str(datos[26]))#  Fotovoltaica
+
+
+        if str(datos[27]) == None:
+            can.drawString(155, 369, "-")
+        else:
+            can.drawString(155, 369, str(datos[27]))#  Gibnete
+
+        if str(datos[28]) == None:
+            can.drawString(270, 369, "-")
+        else:
+            can.drawString(270, 369, str(datos[28]))# Paneles
+
+        if str(datos[29]) == None:
+            can.drawString(380, 369, "-")
+        else:
+            can.drawString(380, 369, str(datos[29]))# Puesta_t
+
+        if str(datos[30]) == None:
+            can.drawString(486, 369, "-")
+        else:
+            can.drawString(486, 369, str(datos[30]))# inveror
+
+        if str(datos[31]) == None:
+            can.drawString(155, 356, "-")
+        else:
+            can.drawString(155, 356, str(datos[31]))# Bateria
+
+        if str(datos[32]) == None:
+            can.drawString(270, 356, "-")
+        else:
+            can.drawString(270, 356, str(datos[32]))# Proyeccion
+
+        if str(datos[33]) == None:
+            can.drawString(380, 356, "-")
+        else:
+            can.drawString(380, 356, str(datos[33]))# Mppt
+
+        if str(datos[34]) == None:
+            can.drawString(486, 356, "-")
+        else:
+            can.drawString(486, 356, str(datos[34]))# Soporte
+
+        if str(datos[35]) == None:
+            can.drawString(100, 331, "-")
+        else:
+            can.drawString(100, 331, str(datos[35]))# Observaciones
     with bd.cursor() as cursor:
         cursor.execute("SELECT * FROM db_liwa.Fotos_Tecnico WHERE Estado = 'MF2'  AND Id_Encuesta = '"+id+"';")
         fotos1 = cursor.fetchone()
@@ -253,9 +256,9 @@ def generarPdfId(id, folderId=None):
     with bd.cursor() as cursor:
         cursor.execute("SELECT * FROM db_liwa.Fotos_Tecnico WHERE Estado = 'MF3'  AND Id_Encuesta = '"+id+"';")
         fotos1 = cursor.fetchone() 
-        if fotos1 ==  None :
-            can.drawString(338, 216, "No Registra Fotografia")
-        else:
+    if fotos1 ==  None :
+        can.drawString(338, 216, "No Registra Fotografia")
+    else:
             can.drawImage("https://www.php.engenius.com.co"+fotos1[4], 338, 216, 170, 80 )
     with bd.cursor() as cursor:
         cursor.execute("SELECT * FROM db_liwa.Fotos_Tecnico WHERE Estado = 'MF1'  AND Id_Encuesta = '"+id+"';")
@@ -635,18 +638,18 @@ def generarPdfId(id, folderId=None):
     # outputStream.close()
 
     # file_path = os.path.abspath("pdfs/"+str(datos[6])+"_Acta.pdf")
-    subfolder_names = [str(datos[5])]
-    folder_name = subfolder_names[0].strip('[]')
-    existingSubFolder = getFolderId(folder_name)
+    if datos is not None:
+        subfolder_names = [str(datos[5])]
+        folder_name = subfolder_names[0].strip('[]')
+        existingSubFolder = getFolderId(folder_name, parentFolderId=folderId)
+        if existingSubFolder:
+            subfolderId = existingSubFolder
+            print("ya existe:" + subfolderId)
+        else:
+            subfolderId = create_sub_folders(folder_id=folderId, subfolder_names=subfolder_names)
+            print(folderId)
 
-    if existingSubFolder:
-        subfolderId = existingSubFolder
-        print("ya existe")
-    else:
-        subfolderId = create_sub_folders(folder_id=folderId, subfolder_names=subfolder_names)
-        print(folderId)
-    
-    sendFiles(file_path=file_path, folder_id=subfolderId)
+        sendFiles(file_path=file_path, folder_id=subfolderId)
 
 
 if __name__ == '__main__':
