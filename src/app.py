@@ -1,5 +1,5 @@
 import datetime
-from flask import Flask, request, send_file, make_response, Response, logging
+from flask import Flask, request, send_file, make_response, Response, logging, jsonify
 import io
 import os 
 import csv, operator
@@ -175,9 +175,22 @@ def sendGoogleDrive():
         generarPdfId(id=str(id), folderId=folder_id)
     
     # Obtener el enlace de la carpeta
+    folder_url = 'https://drive.google.com/drive/folders/'
     urlPdfMantenimiento = folder_url + folder_id
 
-    return urlPdfMantenimiento
+    return jsonify({"urlPdfMantenimiento": urlPdfMantenimiento})
+
+
+@app.route('/deleteFolder', methods=['POST'])
+def deleteFolder():
+    folderName = request.json['folderName']
+    print(folderName)
+
+    # Obtener el ID de la carpeta
+    # Eliminar la carpeta
+    delete_folder(folderName)
+
+    return "Carpeta eliminada"
 
 
 if __name__ == '__main__':

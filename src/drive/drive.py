@@ -18,7 +18,10 @@ scopes = ['https://www.googleapis.com/auth/drive']
 permissions = {
         'type': 'user',
         'role': 'reader',
-        'emailAddress': 'camilo.mendoza@sunpoweresp.co'# Reemplaza con tu dirección de correo electrónico
+        'emailAddress': [
+        'camilo.mendoza@sunpoweresp.co',
+        'anderson.alvarado@sunpoweresp.co'                
+        ]# Reemplaza con tu dirección de correo electrónico
 }
 
 #carga las credenciales del servicio
@@ -50,7 +53,7 @@ def create_driver_folder(folderName):
 
     # Obtener enlace de la carpeta
     folder_url = 'https://drive.google.com/drive/folders/' + folder_id
-    print('Enlace de la carpeta:', folder_url)
+    print('Enlace de la subcarpeta:', folder_url)
 
     service.permissions().create(fileId=folder_id, body=permissions).execute()
     print('Añadido como visualizador de la carpeta')
@@ -150,10 +153,16 @@ def getFolderId(folder_name, parentFolderId=None):
     
     return None
 
+def delete_folder(folder_id):
+    # Cargar las credenciales del archivo JSON
+    # Crear una instancia del cliente de la API de Google Drive
 
-def deletedFolder(folderId):
     try:
-        service.files().delete(fileId=folderId).execute()
-        print(f"carpeta eliminada: {folderId}")
-    except HttpError:
-        print("error al eliminar la carpeta")
+        # Eliminar la carpeta especificada por su ID
+        service.files().delete(fileId=folder_id).execute()
+        print("Carpeta eliminada correctamente.")
+    except Exception as e:
+        print("Error al eliminar la carpeta:", e)
+
+
+# Ejemplo de uso # Reemplazar con el ID de la carpeta que deseas eliminar
