@@ -39,17 +39,37 @@ def LoggingStart():
 app = Flask(__name__)
 CORS(app, support_credentials=True)
 
+folder_url = 'https://drive.google.com/drive/folders/'
 
 @app.route('/excelQuery', methods=['POST'])
 def createExcelWhitQuery():
     query = request.json['query']
-    return Response(
-        save_virtual_workbook(generarExcel(query)),
-        headers={
-            'Content-Disposition': 'attachment; filename=sheet.xlsx',
-            'Content-type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        }
-    )
+    print(query)
+
+    #carpeta principal para los excel
+    folderName="Excel Engenius"
+    existingFolder = getFolderId(folder_name=folderName)
+
+    if existingFolder:
+        folder_id = existingFolder
+        print(folder_id)
+    else:
+        folder_id = create_driver_folder(folderName=folderName)
+
+    generarExcel(query=query, folderId=folder_id)
+
+    urlExcelEngenius = folder_url + folder_id
+    print(urlExcelEngenius)
+    return urlExcelEngenius
+
+
+    # return Response(
+    #     save_virtual_workbook(generarExcel(query)),
+    #     headers={
+    #         'Content-Disposition': 'attachment; filename=sheet.xlsx',
+    #         'Content-type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    #     }
+    # )
 
 @app.route('/excel', methods=['POST'])
 def createExcel():
@@ -92,17 +112,40 @@ def createZipPdf():
 
 @app.route('/fotosZip', methods=['POST'])
 def createZipFotos():
-    idFotos= request.json['idFotos']
-    generarRarFotos(idFotos)
-    response = make_response()
-    response.headers['Content-Disposition'] = "attachment; filename='ejemplo.zip"
-    response.mimetype = 'application/zip'
-    return send_file('../imagenes.zip', as_attachment=True)
+    idFotos = request.json['idFotos']
+    date = datetime.date.today()
+
+    #fecha
+    # Obtener el día y el año
+    nombre_mes = date.strftime("%b")
+    dia = date.strftime("%d")
+    ano = date.strftime("%Y")
+    concat = f"{nombre_mes} - {dia} - {ano}"
+
+    #creamos la carpeta principal
+    folder_name = f"Carpeta Imagenes finalesesas - {concat}"
+    existingFolder = getFolderId(folder_name=folder_name)
+    if existingFolder:
+        folder_id = existingFolder
+    else:
+        folder_id = create_driver_folder(folderName=folder_name)
+    print(folder_id)
+
+    for id in idFotos:
+        generarFotosCoordenadas(ids=id, folderId=folder_id)
+
+    urlDriveImagenes = folder_url + folder_id
+    return urlDriveImagenes
+
+    # generarRarFotos(idFotos)
+    # response = make_response()
+    # response.headers['Content-Disposition'] = "attachment; filename='ejemplo.zip"
+    # response.mimetype = 'application/zip'
+    # return send_file('../imagenes.zip', as_attachment=True)
 
 @app.route('/ActasMantenimiento', methods=['POST'])
 def sendGoogleDrive():
-    idEncuestas  = request.json.get('idEncuestasPdf')
-    subfolder = request.json.get('subfolder')
+    idEncuestas  = request.json.get('idEncuestas')   
     date = datetime.date.today()
     id = ', '.join(' ' + str(id) for id in idEncuestas)
     print(id)
@@ -113,29 +156,29 @@ def sendGoogleDrive():
     nombre_mes = date.strftime("%b")
     dia = date.strftime("%d")
     ano = date.strftime("%Y")
-    
-    
-
     concat = f"{nombre_mes} - {dia} - {ano}"
 
+
     #folder principal 
-    folder_id = create_driver_folder(folderName=f"Actas Mantenimiento - {concat}")
-    print(folder_id)
+    folderName = f"Actas Mantenimiento - {concat}"
+    existingFolder = getFolderId(folder_name=folderName)
 
-    # #subfolder 
-    for id in idEncuestas:
-        files = generarPdfId(id=str(id))
-        subfolder_ids = create_sub_folders(folder_id=folder_id, subfolder_names=f"actas - {id}")
-        print(subfolder_ids)
-        sendFiles(file=outPut, folder_id=subfolder_ids)
+    if existingFolder:
+        folder_id = existingFolder
+        print("carpeta ya existe: " + folder_id)
+    else:
+        folder_id = create_driver_folder(folderName=folderName)
+        print("no existe creada: " + folder_id)
         
-
+    #logica para crear carpetas y archivos 
+    for id in idEncuestas:
+        generarPdfId(id=str(id), folderId=folder_id)
+    
     # Obtener el enlace de la carpeta
-    folder_url = 'https://drive.google.com/drive/folders/' + folder_id
-    print('Enlace de la carpeta:', folder_url)
-    return f"google drive donde se encuentra la informacion {folder_url}";
+    urlPdfMantenimiento = folder_url + folder_id
+
+    return urlPdfMantenimiento
 
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
-

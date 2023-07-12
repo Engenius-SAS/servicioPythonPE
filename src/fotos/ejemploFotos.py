@@ -8,6 +8,8 @@ import zipfile
 from pathlib import Path
 import shutil, logging
 
+from drive.drive import *
+
 try:
     import zlib
     compression = zipfile.ZIP_DEFLATED
@@ -53,7 +55,7 @@ def generarRarFotos (ids):
         zf.close()
 
 
-def generarFotosCoordenadas(ids):                                        
+def generarFotosCoordenadas(ids, folderId=None):                                        
     bd = obtener_conexion()
     try:
         conn = bd.cursor(pymysql.cursors.DictCursor)
@@ -61,6 +63,19 @@ def generarFotosCoordenadas(ids):
         fotos=conn.fetchall()
         if len(fotos) > 0:
             for foto in fotos:
+
+                subFolderName= [ str(foto["Id_Encuesta"]) ]
+                folderName = subFolderName[0].strip('[]') 
+                existingFolder = getFolderId(folderName)
+
+                if existingFolder:
+                    subfolderId = existingFolder
+                    print("existe")
+                else:
+                    # Ejecutar las funciones después de completar el bucle en la condición 1
+                    subfolderId = create_sub_folders(folder_id=folderId, subfolder_names=subFolderName)
+                    print(subfolderId)
+
                 print( "latitud: " + foto['U_latitud'] +" , Longitud: " + foto['U_longitud'])
                 if os.path.exists("imagenes/"+foto['Id_Encuesta']):
                     with urllib.request.urlopen('https://www.php.engenius.com.co'+foto['rutaserver']) as url:
@@ -74,6 +89,11 @@ def generarFotosCoordenadas(ids):
                     image_editable = ImageDraw.Draw(my_image)
                     image_editable.text((200,2100), title_text, (237, 230, 500), font=title_font)
                     my_image.save("imagenes/"+foto['Id_Encuesta']+"/"+foto['Id_Foto_Encuesta']+".jpg")
+
+                    file_path = os.path.abspath("imagenes/" + foto['Id_Encuesta'] + "/" + foto['Id_Foto_Encuesta'] + ".jpg")
+
+                    sendFiles(file_path=file_path, folder_id=subfolderId)
+                    print(subfolderId)                    
                 else:
                     print("else:", foto['Id_Encuesta'])
                     os.mkdir("imagenes/"+foto['Id_Encuesta'])
@@ -88,6 +108,10 @@ def generarFotosCoordenadas(ids):
                     image_editable = ImageDraw.Draw(my_image)
                     image_editable.text((200,2100), title_text, (237, 230, 500), font=title_font)
                     my_image.save("imagenes/"+foto['Id_Encuesta']+"/"+foto['Id_Foto_Encuesta']+".jpg")
+                    
+                    file_path = os.path.abspath("imagenes/"+foto['Id_Encuesta']+"/"+foto['Id_Foto_Encuesta']+".jpg")    
+
+                    sendFiles(file_path=file_path, folder_id=subfolderId)
             else:
                 print("No trae fotos", foto['Id_Encuesta'])
         else:
