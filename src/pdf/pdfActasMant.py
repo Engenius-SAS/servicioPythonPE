@@ -625,31 +625,12 @@ def generarPdfId(id, folderId=None):
     output.addPage(page)
     output.addPage(page1)
 
-    # Crear la ruta completa del archivo PDF generado
+     # Crear la ruta completa del archivo PDF generado
     file_path = os.path.abspath("pdfs/" + str(datos[6]) + "-" + str(datos[9]) + " " +"Acta.pdf")
-    if os.path.exists(file_path):
-        os.remove(file_path)
-        print("Archivo Eliminado ya existente")
-    else:
-        with open(file_path, "wb") as outputStream:
-            output.write(outputStream)
 
-        if datos is not None:
-            subfolder_names = [str(datos[5])]
-            folder_name = subfolder_names[0].strip('[]')
-            existingSubFolder = getFolderId(folder_name, parentFolderId=folderId)
-            if existingSubFolder:
-                subfolderId = existingSubFolder
-                print("Ya existe la subcarpeta: " + subfolderId)
-            else:
-                subfolderId = create_sub_folders(folder_name, parentFolderId=folderId)
-                print("Se creo la subcarpeta: " + subfolderId)
-            
-            sendFiles(file_path=file_path, folder_id=subfolderId)
-
-    # # Escribir el archivo PDF
-    # with open(file_path, "wb") as outputStream:
-    #     output.write(outputStream)
+   # Escribir el archivo PDF
+    with open(file_path, "wb") as outputStream:
+        output.write(outputStream)
 
     # # os.mkdir('pdfs/'+str(i[0]))
     # outputStream = open("pdfs/"+str(datos[6])+"_Acta.pdf", "wb")
@@ -657,6 +638,29 @@ def generarPdfId(id, folderId=None):
     # outputStream.close()
 
     # file_path = os.path.abspath("pdfs/"+str(datos[6])+"_Acta.pdf")
+    if datos is not None:
+        subfolder_names = [str(datos[5])]
+        folder_name = subfolder_names[0].strip('[]')
+        existingSubFolder = getFolderId(folder_name, parentFolderId=folderId)
+        if existingSubFolder:
+            subfolderId = existingSubFolder
+            print("ya existe:" + subfolderId)
+        else:
+            subfolderId = create_sub_folders(folder_id=folderId, subfolder_names=subfolder_names)
+            print(folderId)
+
+        if file_path:
+            file_name = os.path.basename(file_path)
+            existing_file = find_file_in_folder(subfolderId, file_name)
+
+            if existing_file:
+                print("ya existe: ", existing_file)
+            
+            else:
+                file_id = sendFiles(file_path=file_path, folder_id=subfolderId)
+                print("se subio:", file_id)
+                os.remove(file_path)
+                return file_id
     
 if __name__ == '__main__':
    generarPdfId('307-1605790991386')

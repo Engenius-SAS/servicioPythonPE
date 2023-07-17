@@ -138,7 +138,16 @@ def sendFiles(file_path, folder_id):
         print(f'Extensión del archivo: {file_extension}')
 
 
+def find_file_in_folder(folder_id, file_name):
+    query = f"name='{file_name}' and '{folder_id}' in parents"
+    results = service.files().list(q=query).execute()
+    files = results.get('files', [])
+
+    if files:
+        return files[0]
     
+    return None
+
 
 def getFolderId(folder_name, parentFolderId=None):
     query = f"mimeType='application/vnd.google-apps.folder' and name='{folder_name}'"
