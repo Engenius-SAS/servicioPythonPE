@@ -1,14 +1,15 @@
-FROM alpine:3.15
+FROM python:3
 
-RUN apk add --no-cache python3-dev \
-    && pip3 install --upgrade pip
+WORKDIR /src/app
 
-WORKDIR /app
+# Copia el archivo requirements.txt
+COPY requirements.txt ./
 
-COPY . /app
+# Instala las dependencias
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip3 --no-cache-dir install -r requirements.txt
+# Copia el resto de los archivos del proyecto
+COPY . .
 
+# Comando para ejecutar la aplicación
 CMD ["python3", "src/app.py"]
-
-
